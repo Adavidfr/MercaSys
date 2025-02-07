@@ -28,7 +28,51 @@ def mostrarInterfaz():
 
     ventana.mainloop()
 
+def agregarProducto(productos):
+    ventana = tk.Tk()
+    ventana.title("Agregar producto")
+
+    tk.Label(ventana, text="ID del producto:").grid(row=0, column=0)
+    idProducto = tk.Entry(ventana)
+    idProducto.grid(row=0, column=1)
+
+    tk.Label(ventana, text="Nombre del producto:").grid(row=1, column=0)
+    nombre = tk.Entry(ventana)
+    nombre.grid(row=1, column=1)
+
+    tk.Label(ventana, text="Cantidad del producto:").grid(row=2, column=0)
+    cantidad = tk.Entry(ventana)
+    cantidad.grid(row=2, column=1)
+
+    tk.Label(ventana, text="Unidad de medida:").grid(row=3, column=0)
+    unidad = tk.Entry(ventana)
+    unidad.grid(row=3, column=1)
+
+    tk.Label(ventana, text="Precio (USD):").grid(row=4, column=0)
+    precio = tk.Entry(ventana)
+    precio.grid(row=4, column=1)
+
+    tk.Label(ventana, text="Categoría:").grid(row=5, column=0)
+    categoria = tk.Entry(ventana)
+    categoria.grid(row=5, column=1)
+
+    def guardarProducto():
+        productos[idProducto.get()] = {
+            "Nombre": nombre.get(),
+            "Cantidad": int(cantidad.get()),
+            "Unidad": unidad.get(),
+            "Precio": float(precio.get()),
+            "Categoría": categoria.get()
+        }
+
+        print("Producto agregado exitosamente.")
+        ventana.destroy()
+
+    tk.Button(ventana, text="Guardar", command=guardarProducto).grid(row=6, column=0, columnspan=2)
+
+    ventana.mainloop()
 mostrarInterfaz()
+# agregarProducto(productos)
 
 
 
