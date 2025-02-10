@@ -1,36 +1,35 @@
-def imprimirProductos(productos):
-    print("Listado de productos:")
-    print("-" * 80)
-    print("{:<10} {:<20} {:<10} {:<10} {:<15} {:<10}".format(
-        "ID", "Nombre", "Cantidad", "Unidad", "Precio (USD)", "Categoría"
-    ))
-    print("-" * 80)
-
-    for idProducto, detalles in productos.items():
-        print("{:<10} {:<20} {:<10} {:<10} {:<15} {:<10}".format(
-            idProducto,
-            detalles["Nombre"],
-            detalles["Cantidad"],
-            detalles["Unidad"],
-            f"${detalles['Precio']:.2f}",
-            detalles["Categoría"]
-        ))
-    print("-" * 80)
-
-def agregarProducto(productos):
-    idProducto = input("Ingrese el ID del producto: ")
-    nombre = input("Ingrese el nombre del producto: ")
-    cantidad = int(input("Ingrese la cantidad del producto: "))
-    unidad = input("Ingrese la unidad de medida del producto: ")
-    precio = float(input("Ingrese el precio del producto (USD): "))
-    categoria = input("Ingrese la categoría del producto: ")
-
+def registrarProducto(productos, idProducto, nombre, cantidad, unidad, precio, categoria, stockMinimo):
+    if idProducto in productos:
+        return "El producto ya existe."
     productos[idProducto] = {
         "Nombre": nombre,
         "Cantidad": cantidad,
         "Unidad": unidad,
         "Precio": precio,
-        "Categoría": categoria
+        "Categoría": categoria,
+        "Stock mínimo": stockMinimo
     }
+    return "Producto registrado exitosamente."
 
-    print("Producto agregado exitosamente.")
+def actualizarProducto(productos, idProducto, **kwargs):
+    if idProducto not in productos:
+        return "Producto no encontrado."
+    productos[idProducto].update(kwargs)
+    return "Producto actualizado exitosamente."
+
+def consultarInventario(productos):
+    return productos
+
+def eliminarProducto(productos, idProducto):
+    if idProducto in productos:
+        del productos[idProducto]
+        return "Producto eliminado exitosamente."
+    return "Producto no encontrado."
+
+def gestionarStock(productos, idProducto, cantidad):
+    if idProducto in productos:
+        productos[idProducto]["Cantidad"] += cantidad
+        if productos[idProducto]["Cantidad"] < 0:
+            productos[idProducto]["Cantidad"] = 0
+        return "Stock actualizado exitosamente."
+    return "Producto no encontrado."
