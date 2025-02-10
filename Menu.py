@@ -1,78 +1,55 @@
-from inventario import productos
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
+from inventario import productos
+from funciones import registrarProducto, actualizarProducto, consultarInventario, eliminarProducto, gestionarStock
 
-def mostrarInterfaz():
+class MercaSysApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("MercaSys - Gestión de Inventario")
 
-    ventana = tk.Tk()
-    ventana.title("MercaSys")
+        tk.Button(root, text="Registrar Producto", command=self.registrarProducto).pack(pady=5)
+        tk.Button(root, text="Actualizar Producto", command=self.actualizarProducto).pack(pady=5)
+        tk.Button(root, text="Consultar Inventario", command=self.consultarInventario).pack(pady=5)
+        tk.Button(root, text="Eliminar Producto", command=self.eliminar_producto).pack(pady=5)
+        tk.Button(root, text="Gestionar Stock", command=self.gestionar_stock).pack(pady=5)
 
-    columnas = ("ID", "Nombre", "Cantidad", "Unidad", "Precio (USD)", "Categoría")
-    tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
+    def registrarProducto(self):
+        messagebox.showinfo("Registro", registrarProducto(productos, 104, "Mantequilla", 5, "kg", 35.0, "Lácteos", 2))
 
-    for col in columnas:
-        tabla.heading(col, text=col)
-        tabla.column(col, anchor=tk.CENTER, width=120)
+    def actualizarProducto(self):
+        messagebox.showinfo("Actualización", actualizarProducto(productos, 101, Precio=14.0))
 
-    for idProducto, detalles in productos.items():
-        tabla.insert("", tk.END, values=(
-            idProducto,
-            detalles["Nombre"],
-            detalles["Cantidad"],
-            detalles["Unidad"],
-            f"${detalles['Precio']:.2f}",
-            detalles["Categoría"]
-        ))
+    def consultarInventario(self):
+        ventana = tk.Toplevel(self.root)
+        ventana.title("Inventario de Productos")
 
-    tabla.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        columnas = ("ID", "Nombre", "Cantidad", "Unidad", "Precio (USD)", "Categoría")
+        tabla = ttk.Treeview(ventana, columns=columnas, show="headings")
 
-    ventana.mainloop()
+        for col in columnas:
+            tabla.heading(col, text=col)
+            tabla.column(col, anchor=tk.CENTER, width=120)
 
-def agregarProducto(productos):
-    ventana = tk.Tk()
-    ventana.title("Agregar producto")
+        for idProducto, detalles in productos.items():
+            tabla.insert("", tk.END, values=(
+                idProducto,
+                detalles["Nombre"],
+                detalles["Cantidad"],
+                detalles["Unidad"],
+                f"${detalles['Precio']:.2f}",
+                detalles["Categoría"]
+            ))
 
-    tk.Label(ventana, text="ID del producto:").grid(row=0, column=0)
-    idProducto = tk.Entry(ventana)
-    idProducto.grid(row=0, column=1)
+        tabla.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    tk.Label(ventana, text="Nombre del producto:").grid(row=1, column=0)
-    nombre = tk.Entry(ventana)
-    nombre.grid(row=1, column=1)
+    def eliminarProducto(self):
+        messagebox.showinfo("Eliminación", eliminarProducto(productos, 102))
 
-    tk.Label(ventana, text="Cantidad del producto:").grid(row=2, column=0)
-    cantidad = tk.Entry(ventana)
-    cantidad.grid(row=2, column=1)
+    def gestionarStock(self):
+        messagebox.showinfo("Gestión de Stock", gestionarStock(productos, 101, -5))
 
-    tk.Label(ventana, text="Unidad de medida:").grid(row=3, column=0)
-    unidad = tk.Entry(ventana)
-    unidad.grid(row=3, column=1)
-
-    tk.Label(ventana, text="Precio (USD):").grid(row=4, column=0)
-    precio = tk.Entry(ventana)
-    precio.grid(row=4, column=1)
-
-    tk.Label(ventana, text="Categoría:").grid(row=5, column=0)
-    categoria = tk.Entry(ventana)
-    categoria.grid(row=5, column=1)
-
-    def guardarProducto():
-        productos[idProducto.get()] = {
-            "Nombre": nombre.get(),
-            "Cantidad": int(cantidad.get()),
-            "Unidad": unidad.get(),
-            "Precio": float(precio.get()),
-            "Categoría": categoria.get()
-        }
-
-        print("Producto agregado exitosamente.")
-        ventana.destroy()
-
-    tk.Button(ventana, text="Guardar", command=guardarProducto).grid(row=6, column=0, columnspan=2)
-
-    ventana.mainloop()
-mostrarInterfaz()
-# agregarProducto(productos)
-
-
-
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MercaSysApp(root)
+    root.mainloop()
