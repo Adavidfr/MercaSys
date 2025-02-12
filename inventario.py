@@ -33,8 +33,8 @@ productos = {
     503: {"Nombre": "Pan dulce", "Cantidad": 60, "Unidad": "piezas", "Precio": 1.5, "Categoría": "Panadería y galletas", "Stock mínimo": 10},
 
     # Limpieza
-    601: {"Nombre": "Papel higiénico", "Cantidad": 50, "Unidad": "rollos", "Precio": 20.0, "Categoría": "Limpieza y cuidado del hogar", "Stock mínimo": 5},
-    602: {"Nombre": "Detergente", "Cantidad": 25, "Unidad": "botellas", "Precio": 10.0, "Categoría": "Limpieza y cuidado del hogar", "Stock mínimo": 5},
+    601: {"Nombre": "Papel higiénico", "Cantidad": 50, "Unidad": "rollos", "Precio": 20.0, "Categoría": "Limpieza", "Stock mínimo": 5},
+    602: {"Nombre": "Detergente", "Cantidad": 25, "Unidad": "botellas", "Precio": 10.0, "Categoría": "Limpieza", "Stock mínimo": 5},
 
     # Bebidas
     701: {"Nombre": "Agua embotellada", "Cantidad": 100, "Unidad": "botellas", "Precio": 1.0, "Categoría": "Bebidas", "Stock mínimo": 20},
