@@ -1,35 +1,44 @@
-def registrarProducto(productos, idProducto, nombre, cantidad, unidad, precio, categoria, stockMinimo):
-    if idProducto in productos:
-        return "El producto ya existe."
-    productos[idProducto] = {
-        "Nombre": nombre,
-        "Cantidad": cantidad,
-        "Unidad": unidad,
-        "Precio": precio,
-        "Categoría": categoria,
-        "Stock mínimo": stockMinimo
-    }
-    return "Producto registrado exitosamente."
+from inventario import productos
 
-def actualizarProducto(productos, idProducto, **kwargs):
-    if idProducto not in productos:
-        return "Producto no encontrado."
-    productos[idProducto].update(kwargs)
-    return "Producto actualizado exitosamente."
+# 1. Registrar Producto
+def registrar_producto(datos):
+    id_, nombre, cantidad, unidad, precio, categoria, stock = datos
+    if id_ not in productos:
+        productos[id_] = {
+            "Nombre": nombre,
+            "Cantidad": cantidad,
+            "Unidad": unidad,
+            "Precio": precio,
+            "Categoría": categoria,
+            "Stock mínimo": stock
+        }
+        return True
+    return False
 
-def consultarInventario(productos):
-    return productos
+# 2. Actualizar Producto
+def actualizar_producto(id_, nuevos_datos):
+    if id_ in productos:
+        productos[id_].update(nuevos_datos)
+        return True
+    return False
 
-def eliminarProducto(productos, idProducto):
-    if idProducto in productos:
-        del productos[idProducto]
-        return "Producto eliminado exitosamente."
-    return "Producto no encontrado."
+# 3. Eliminar Producto
+def eliminar_producto(id_):
+    if id_ in productos:
+        del productos[id_]
+        return True
+    return False
 
-def gestionarStock(productos, idProducto, cantidad):
-    if idProducto in productos:
-        productos[idProducto]["Cantidad"] += cantidad
-        if productos[idProducto]["Cantidad"] < 0:
-            productos[idProducto]["Cantidad"] = 0
-        return "Stock actualizado exitosamente."
-    return "Producto no encontrado."
+# 4. Seleccionar Producto
+def seleccionar_producto(id_):
+    return productos.get(id_, None)
+
+# 5. Encontrar Producto por Nombre
+def encontrar_producto(nombre):
+    resultados = {id_: datos for id_, datos in productos.items() if nombre.lower() in datos["Nombre"].lower()}
+    return resultados
+
+# 6. Limpiar Campos
+def limpiar_campos(entradas):
+    for entrada in entradas:
+        entrada.set("")
