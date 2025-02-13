@@ -1,13 +1,18 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter
-from inventario import productos  # Importación de productos
-from funciones import registrar_producto, actualizar_producto, eliminar_producto, seleccionar_producto, encontrar_producto, limpiar_campos
+from inventario import productos
+from tkinter import messagebox
 
-window = tkinter.Tk()
-window.title("Mercasys")
-window.geometry("750x640")
-my_tree = ttk.Treeview(window, show='headings', height=20)
+ventana = tkinter.Tk()
+ventana.title("Mercasys")
+ventana.geometry("750x640")
+
+logo = PhotoImage(file="Elementos\imagen2.png")
+logoLabel = Label(ventana, image=logo, )
+logoLabel.pack()
+
+my_tree = ttk.Treeview(ventana, show='headings', height=20)
 style = ttk.Style()
 
 placeholderArray = [tkinter.StringVar() for _ in range(7)]  # Lista de StringVar, 7 elementos
@@ -19,37 +24,190 @@ def refreshTable():
     for data in my_tree.get_children():
         my_tree.delete(data)
     for item_id, details in productos.items():
-        my_tree.insert(parent='', index='end', iid=item_id, text="", 
+        my_tree.insert(parent='', index='end', iid=str(item_id), text="", 
                         values=(item_id, details["Nombre"], details["Cantidad"], 
                                 details["Unidad"], details["Precio"], 
                                 details["Categoría"], details["Stock mínimo"]), 
                         tag="orow")
         my_tree.tag_configure('orow', background="#EEEEEE")
-        my_tree.pack()
+      
 
-frame = tkinter.Frame(window, bg="#2f4a6c")
+frame = tkinter.Frame(ventana, bg="#3c5a7f")
 frame.pack(fill="x", expand=True)
 
-btnColor = "#2f4a6c"
+btnColor = "#3c5a7f"
 
+#FUNCIONES
+
+def registrar(datos):
+    # Extraer los datos del formulario
+    item_id = int(datos[0])  # ID del producto
+    nombre = datos[1]  # Nombre del producto
+    cantidad = int(datos[2])  # Cantidad (convertido a entero)
+    unidad = datos[3]  # Unidad de medida
+    precio = float(datos[4])  # Precio (convertido a flotante)
+    categoria = datos[5]  # Categoría del producto
+    stock_minimo = int(datos[6])  # Stock mínimo (convertido a entero)
+
+    # Verificar si el ID ya existe
+    if item_id in productos:
+        print("El ID del producto ya existe.")
+        return
+
+    # Registrar el nuevo producto en el diccionario 'productos'
+    productos[item_id] = {
+        "Nombre": nombre,
+        "Cantidad": cantidad,
+        "Unidad": unidad,
+        "Precio": precio,
+        "Categoría": categoria,
+        "Stock mínimo": stock_minimo
+    }
+
+    print(f"Producto '{nombre}' registrado correctamente.")
+    refreshTable()  # Actualiza la tabla con el nuevo producto
+
+def actualizar():
+    try:
+        selectedItem = my_tree.selection()[0]
+        selectedItemId = int(my_tree.item(selectedItem)['values'][0])
+    except:
+        messagebox.showwarning("", "Por favor selecciona un producto")
+        return
+
+    # Obtener y validar el ID como cadena antes de convertirlo
+    id_str = idEntrada.get().strip()
+    if not id_str:
+        messagebox.showwarning("Error", "El campo ID no puede estar vacío")
+        return
+
+    try:
+        itemId = int(id_str)
+    except ValueError:
+        messagebox.showwarning("Error", "El ID debe ser un número.")
+        return
+
+    nombre = nombreEntrada.get().strip()
+    cantidad = cantidadEntrada.get().strip()
+    unidad = unidadEntrada.get().strip()
+    precio = precioEntrada.get().strip()
+    categoria = categoriaEntrada.get().strip()
+    stock = stockEntrada.get().strip()
+
+    # Verificar que los demás campos no estén vacíos
+    if not (nombre and cantidad and unidad and precio and categoria and stock):
+        messagebox.showwarning("", "Por favor llena todos los campos")
+        return
+
+    if selectedItemId != itemId:
+        messagebox.showwarning("", "No puedes cambiar el ID del producto")
+        return
+
+    try:
+        if itemId not in productos:
+            messagebox.showwarning("", "Id no encontrado")
+            return
+        
+        productos[itemId] = {
+            "Nombre": nombre,
+            "Cantidad": int(cantidad),
+            "Unidad": unidad,
+            "Precio": float(precio),
+            "Categoría": categoria,
+            "Stock mínimo": int(stock)
+        }
+
+        messagebox.showinfo("", "Producto actualizado correctamente")
+    except Exception as err:
+        messagebox.showwarning("", "Error occurred ref: " + str(err))
+        return
+
+    refreshTable()
+
+
+def seleccionar():
+    try:
+        selected_item = my_tree.selection()[0]  
+        valores = my_tree.item(selected_item, 'values')  
+
+        for i in range(len(placeholderArray)):
+            placeholderArray[i].set(valores[i])
+
+    except IndexError:
+        messagebox.showwarning("Selección Vacía", "Por favor, selecciona un producto de la lista.")
+
+def eliminar(placeholderArray, my_tree):
+    item_id = int(placeholderArray[0].get().strip())
+    if not item_id:
+        messagebox.showwarning("Error", "Debe seleccionar un producto para eliminar")
+        return
+
+    if item_id not in productos:
+        messagebox.showwarning("Error", "Producto no encontrado.")
+        return
+
+    del productos[item_id]
+    print(f"Producto '{item_id}' eliminado correctamente.")
+    refreshTable()
+
+def consultar(placeholderArray, my_tree):
+    search_id_str = placeholderArray[0].get().strip()
+    search_name = placeholderArray[1].get().strip()
+
+    found = False
+
+    if search_id_str:
+        try:
+            search_id = int(search_id_str)
+        except ValueError:
+            messagebox.showwarning("Error", "El ID debe ser un número.")
+            return
+
+        if search_id in productos:
+            found = True
+        else:
+            messagebox.showinfo("Buscar", f"No se encontró un producto con ID: {search_id}")
+            return
+    elif search_name:
+        for pid, details in productos.items():
+            if details["Nombre"].lower() == search_name.lower():
+                search_id = pid
+                found = True
+                break
+        if not found:
+            messagebox.showinfo("Buscar", f"No se encontró un producto con nombre: {search_name}")
+            return
+    else:
+        messagebox.showinfo("Buscar", "Por favor, ingresa un ID o nombre para buscar.")
+        return
+
+    my_tree.selection_set(str(search_id))
+    my_tree.focus(str(search_id))
+    seleccionar()
+    messagebox.showinfo("Buscar", f"Producto encontrado: {search_id} - {productos[search_id]['Nombre']}")
+
+def limpiar(placeholderArray):
+    for var in placeholderArray:
+        var.set("")
+    print("Campos limpiados")
 
 # Manage Frame
 manageFrame = tkinter.LabelFrame(frame, text="Menú", borderwidth=5)
 manageFrame.grid(row=0, column=0, sticky="nw", padx=30, pady=20)
 
-registrarBtn = Button(manageFrame, text="Registrar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: registrar_producto([entry.get() for entry in placeholderArray]))
-actiualizarBtn = Button(manageFrame, text="Actualizar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: actualizar_producto(placeholderArray, my_tree))
-eliminarBtn = Button(manageFrame, text="Eliminar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: eliminar_producto(placeholderArray, my_tree))
-encontrarBtn = Button(manageFrame, text="Encontrar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: encontrar_producto(placeholderArray, my_tree))
-seleccionarBtn = Button(manageFrame, text="Seleccionar", width=10, borderwidth=3, bg=btnColor, fg='white', command= seleccionar_producto)
-limpiarBtn = Button(manageFrame, text="Limpiar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: limpiar_campos(placeholderArray))
+registrarBtn = Button(manageFrame, text="Registrar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: registrar([entry.get() for entry in placeholderArray]))
+actualizarBtn = Button(manageFrame, text="Actualizar", width=10, borderwidth=3, bg=btnColor, fg='white', command=actualizar)
+eliminarBtn = Button(manageFrame, text="Eliminar", width=10, borderwidth=3, bg="#a74b4b", fg='white', command=lambda: eliminar(placeholderArray, my_tree))
+encontrarBtn = Button(manageFrame, text="Consultar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: consultar(placeholderArray, my_tree))
+seleccionarBtn = Button(manageFrame, text="Seleccionar", width=10, borderwidth=3, bg=btnColor, fg='white', command= seleccionar)
+limpiarBtn = Button(manageFrame, text="Limpiar", width=10, borderwidth=3, bg=btnColor, fg='white', command=lambda: limpiar(placeholderArray))
 
 registrarBtn.grid(row=0, column=0, padx=5, pady=5)
-actiualizarBtn.grid(row=1, column=0, padx=5, pady=5)
-eliminarBtn.grid(row=2, column=0, padx=5, pady=5)
-encontrarBtn.grid(row=4, column=0, padx=5, pady=5)
+actualizarBtn.grid(row=1, column=0, padx=5, pady=5)
+eliminarBtn.grid(row=5, column=0, padx=5, pady=5)
+encontrarBtn.grid(row=2, column=0, padx=5, pady=5)
 seleccionarBtn.grid(row=3, column=0, padx=5, pady=5)
-limpiarBtn.grid(row=5, column=0, padx=5, pady=5)
+limpiarBtn.grid(row=4, column=0, padx=5, pady=5)
 
 # Entries Frame
 entriesFrame = tkinter.LabelFrame(frame, text="Formulario", borderwidth=5)
@@ -89,7 +247,7 @@ precioEntrada.grid(row=4, column=1, padx=5, pady=5)
 categoriaEntrada.grid(row=5, column=1, padx=5, pady=5)
 stockEntrada.grid(row=6, column=1, padx=5, pady=5)
 
-style.configure(window)
+style.configure(ventana)
 
 my_tree["columns"] = ("Item Id", "Nombre", "Cantidad", "Unidad", "Precio", "Categoria", "Stock")
 my_tree.column("Item Id", anchor=W, width=76)
@@ -110,115 +268,7 @@ my_tree.heading("Stock", text="Stock", anchor=W)
 
 my_tree.pack()
 
-#FUNCIONES
-
-def registrar_producto(datos):
-    # Extraer los datos del formulario
-    item_id = datos[0]  # ID del producto
-    nombre = datos[1]  # Nombre del producto
-    cantidad = int(datos[2])  # Cantidad (convertido a entero)
-    unidad = datos[3]  # Unidad de medida
-    precio = float(datos[4])  # Precio (convertido a flotante)
-    categoria = datos[5]  # Categoría del producto
-    stock_minimo = int(datos[6])  # Stock mínimo (convertido a entero)
-
-    # Verificar si el ID ya existe
-    if item_id in productos:
-        print("El ID del producto ya existe.")
-        return
-
-    # Registrar el nuevo producto en el diccionario 'productos'
-    productos[item_id] = {
-        "Nombre": nombre,
-        "Cantidad": cantidad,
-        "Unidad": unidad,
-        "Precio": precio,
-        "Categoría": categoria,
-        "Stock mínimo": stock_minimo
-    }
-
-    print(f"Producto '{nombre}' registrado correctamente.")
-    refreshTable()  # Actualiza la tabla con el nuevo producto
-
-def actualizar_producto(placeholderArray, my_tree):
-    # Obtener el ID del producto a actualizar
-    item_id = placeholderArray[0].get()
-    print(f"Buscando producto con ID: {item_id}")  # Agrega esta línea para depurar
-
-    # Verificar si el ID existe en productos
-    if item_id not in productos:
-        print("Producto no encontrado.")
-        return
-
-    # Extraer los nuevos valores del formulario
-    nombre = placeholderArray[1].get()
-    cantidad = int(placeholderArray[2].get())
-    unidad = placeholderArray[3].get()
-    precio = float(placeholderArray[4].get())
-    categoria = placeholderArray[5].get()
-    stock_minimo = int(placeholderArray[6].get())
-
-    # Actualizar los valores en el diccionario de productos
-    productos[item_id] = {
-        "Nombre": nombre,
-        "Cantidad": cantidad,
-        "Unidad": unidad,
-        "Precio": precio,
-        "Categoría": categoria,
-        "Stock mínimo": stock_minimo
-    }
-
-    print(f"Producto '{item_id}' actualizado correctamente.")
-    refreshTable()  # Actualiza la tabla con los cambios
-
-
-def eliminar_producto(placeholderArray, my_tree):
-    item_id = placeholderArray[0].get()
-
-    # Verificar si el ID existe en productos
-    if item_id not in productos:
-        print("Producto no encontrado.")
-        return
-
-    # Eliminar el producto
-    del productos[item_id]
-    print(f"Producto '{item_id}' eliminado correctamente.")
-    refreshTable()  # Actualiza la tabla después de la eliminación
-
-
-def seleccionar_producto():
-    # Obtener el ID del producto seleccionado en el Treeview
-    selected_item = my_tree.selection()
-    
-    if not selected_item:
-        print("No se ha seleccionado ningún producto.")
-        return
-    
-    # Obtener los datos de la fila seleccionada
-    item_id = my_tree.item(selected_item[0], 'values')[0]
-    nombre = my_tree.item(selected_item[0], 'values')[1]
-    cantidad = my_tree.item(selected_item[0], 'values')[2]
-    unidad = my_tree.item(selected_item[0], 'values')[3]
-    precio = my_tree.item(selected_item[0], 'values')[4]
-    categoria = my_tree.item(selected_item[0], 'values')[5]
-    stock_minimo = my_tree.item(selected_item[0], 'values')[6]
-    
-    # Llenar los campos del formulario con los datos seleccionados
-    placeholderArray[0].set(item_id)
-    placeholderArray[1].set(nombre)
-    placeholderArray[2].set(cantidad)
-    placeholderArray[3].set(unidad)
-    placeholderArray[4].set(precio)
-    placeholderArray[5].set(categoria)
-    placeholderArray[6].set(stock_minimo)
-
-    print(f"Producto seleccionado: {nombre} (ID: {item_id})")
-
-
-
-
-
 refreshTable()
 
-window.resizable(False, False)
-window.mainloop()
+ventana.resizable(False, False)
+ventana.mainloop()
