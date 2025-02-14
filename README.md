@@ -8,50 +8,42 @@ MercaSys es un programa diseñado para proporcionar un servicio integral de gest
 
 MercaSys implementará funcionalidades CRUD (Crear, Leer, Actualizar y Eliminar), incluyendo:
 
-- **Registrar productos**: Añadir nuevos productos al inventario con detalles clave como nombre, categoría, precio y cantidad.
-- **Actualizar inventario**: Modificar datos de los productos existentes, como precios o descripciones.
-- **Consultar inventario**: Generar un listado detallado del stock, mostrando información esencial como cantidades disponibles y categorías.
-- **Eliminar productos**: Remover productos que ya no estén disponibles o que hayan sido descontinuados.
-- **Gestión de stock**: Incrementar o disminuir la cantidad de productos según las entradas o ventas realizadas.
+- **Registrar productos**: Permite agregar nuevos productos con detalles como ID, nombre, cantidad, unidad, precio, categoría y stock mínimo.
+- **Actualizar productos**: Permite modificar los detalles de un producto ya registrado.
+- **Eliminar productos**: Permite eliminar un producto de la base de datos.
+- **Consultar productos**: Permite buscar productos por ID o nombre.
+- **Visualización en tabla**: Los productos registrados se muestran en una tabla con la opción de seleccionar, editar y eliminar elementos.
 
-## Validaciones Generales
+# Librerías Utilizadas
 
-Para garantizar la correcta operación y confiabilidad del sistema, MercaSys incorporará las siguientes validaciones:
+- **Tkinter**: Para la interfaz gráfica.
+- **Ttk**: Extensión de Tkinter para widgets avanzados.
+- **Messagebox**: Para mostrar mensajes de alerta e informativos.
+- **Productos (importado de inventario)**: Diccionario que almacena la información de los productos.
 
-### 1. Validación de datos de entrada:
+# Validaciones Generales
 
-- Verificación de que los datos introducidos sean correctos y completos, como precios, cantidades y descripciones de productos.
-- Validación de que los campos obligatorios no queden vacíos y que los valores numéricos (como precios y cantidades) sean mayores que cero.
-- Restricciones para evitar la entrada de caracteres no válidos o datos erróneos.
+Para garantizar la correcta operación y confiabilidad del sistema, **MercaSys** incorporará las siguientes validaciones:
 
-### 2. Control de consistencia de datos:
+- Verificación de campos vacíos al actualizar productos.
+- Validación de tipo de datos (ID y cantidad deben ser enteros, precio debe ser flotante).
+- Prevención de duplicación de IDs al registrar productos.
+- Restricción para que el ID de un producto no sea modificado al actualizar.
+- Control de selección de productos en la interfaz (mensajes de error si no se elige un producto).
+- Mensajes de advertencia y confirmación para mejorar la experiencia del usuario.
 
-- Comprobación de la existencia del producto en el inventario antes de permitir actualizaciones o eliminaciones.
-- Validación de modificaciones del stock para evitar cantidades negativas o incoherentes.
+# Características Adicionales
 
-## Características Adicionales
-
-MercaSys también contará con características adicionales para mejorar su funcionalidad:
-
-- **Reportes de inventario**: Generación de reportes personalizados para identificar los productos más vendidos, faltantes o próximos a agotarse.
-- **Alertas de stock bajo**: Notificación al administrador cuando el inventario de un producto alcance un nivel mínimo predefinido.
-- **Búsqueda avanzada**: Permitir la búsqueda de productos por nombre, categoría o rango de precios.
-- **Interfaz amigable**: Una interfaz simple e intuitiva diseñada para usuarios con conocimientos básicos de tecnología.
-
-## Resultados Esperados
-
-El objetivo final de MercaSys es ofrecer una solución funcional y eficiente para simplificar la administración del inventario en tiendas de abarrotes. Los beneficios incluyen:
-
-- **Optimización del tiempo**: Automatización de tareas repetitivas para reducir el tiempo dedicado a la gestión manual.
-- **Mejora en la eficiencia operativa**: Reducción de errores humanos y mejor control del stock.
-- **Facilitación en la toma de decisiones**: Acceso a datos precisos y actualizados para apoyar la planificación y el reabastecimiento.
+- **Reportes de inventario**: Generar reportes personalizados para identificar los productos más vendidos, faltantes o próximos a agotarse.
+- **Búsqueda avanzada**: Buscar productos por nombre, Id, etc.
+- **Interfaz amigable**: Diseñar una interfaz simple e intuitiva para facilitar el uso del sistema a usuarios con conocimientos básicos de tecnología.
 
 MercaSys está diseñado para ser una herramienta esencial en la gestión diaria de una tienda de abarrotes, contribuyendo al crecimiento y sostenibilidad del negocio.
 
 ## Logotipo
 
-![Boceto de la Interfaz](/Elementos/logo.png)
+![Logo](/Elementos/logo.png)
 
 ## **Boceto de la Interfaz Gráfica**
 
-![Boceto de la Interfaz](/Elementos/boceto.png)
+![Interfaz](/Elementos/interfaz.png)
